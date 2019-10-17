@@ -1,7 +1,15 @@
 import socket
 import pandas as panda
+# from time import time, process_time
 
 server_adr = ("dbl44.beuth-hochschule.de", 21)
+
+'''
+@learning: TCP_NODELAY disables nagle's algorithm and ensures data is written immediately. 
+note: This increases overhead in all packets but since this client-server example does not require much throughput it's okay,
+it works with nagle's algorithm, anyway. 
+There wasn't any significant difference in process time between enabled and disabled algorithm
+'''
 sock = socket.socket(socket.AF_INET, socket.TCP_NODELAY)
 
 header = ['dslp/2.0\r\n', 'request time\r\n', 'dslp/body\r\n']
@@ -69,7 +77,22 @@ def get_server_infos():
 
 
 if __name__ == "__main__":
+	list = []
+	t = 0
 	sock.connect(server_adr)
+	# for i in range(1,300):
 	get_server_infos()
+	#	start = process_time()
 	sendHeader(header)
 	receive()
+	#	end = process_time()
+	#	t = end-start
+	#	t += t
+	# print(t/300)
+
+
+
+
+
+
+

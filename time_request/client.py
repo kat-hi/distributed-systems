@@ -77,7 +77,6 @@ def get_server_infos():
 
 
 if __name__ == "__main__":
-	list = []
 	t = 0
 	sock.connect(server_adr)
 	# for i in range(1,300):

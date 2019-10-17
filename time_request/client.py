@@ -1,6 +1,6 @@
 import socket
 import pandas as panda
-# from time import time, process_time
+# from time import process_time
 
 server_adr = ("dbl44.beuth-hochschule.de", 21)
 

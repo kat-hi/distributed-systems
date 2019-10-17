@@ -59,8 +59,8 @@ def receive():
 	if check_dslp_header(response):
 		parse = panda.Timestamp(response[3])
 		print("Current time on the server:", parse.day_name(), parse.month_name(), parse.time(), "CEST", parse.year)
-	elif catch_error_message(response):
-		pass
+	elif catch_error_message(response) != True:
+		print('processing dslp failed.')
 
 
 def get_server_infos():

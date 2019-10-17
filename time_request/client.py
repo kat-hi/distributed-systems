@@ -58,7 +58,7 @@ def receive():
 	response_file.close()
 	if check_dslp_header(response):
 		parse = panda.Timestamp(response[3])
-		print("Current time on the server:", parse.day_name(), parse.month_name(), parse.time(), "CEST", parse.year)
+		print("Current time on the server:", parse.day_name(), parse.month_name(), parse.day, parse.time(), "CEST", parse.year)
 	elif catch_error_message(response) != True:
 		print('processing dslp failed.')
 

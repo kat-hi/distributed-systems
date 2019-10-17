@@ -21,11 +21,11 @@ message_type = ['request time\n', 'response time\n', 'group join\n', 'group leav
 
 def check_dslp_header(response):
 	'''
-		@ response: list of strings. each string is one line of the server's response
-		@ check_message_type: to pass the dslp-header-check "check_message_type" is expected to be 1. It returns 1 if
-			the response message type fits to an acceptable type in message_type list.
-		@ response[0] and response[2]: the first and third line in the header which are simply compared to the string
-			expected from DSLP
+	@ response: list of strings. each string is one line of the server's response
+	@ check_message_type: to pass the dslp-header-check "check_message_type" is expected to be 1. It returns 1 if
+		the response message type fits to an acceptable type in message_type list.
+	@ response[0] and response[2]: the first and third line in the header which are simply compared to the string
+		expected from DSLP
 	'''
 	check_message_type = 0
 	if response[0] != 'dslp/2.0\n':

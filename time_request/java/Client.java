@@ -48,7 +48,6 @@ public class Client {
         String peername = "dbl44.beuth-hochschule.de";
         int port = 21;
         Socket socket;
-        Client client = new Client();
 
         try {
             socket = new Socket(peername, port);

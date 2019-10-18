@@ -59,7 +59,7 @@ def catch_error_message(response):
 	return True
 
 
-def sendHeader(header):
+def send_header(header):
 	for message in header:
 		sock.send(bytearray(message, "UTF-8"))
 
@@ -98,7 +98,7 @@ def measure_process_time():
 	with open('process-time-checklist.txt', 'w') as ptc:
 		for i in range(1, requests):
 			start = process_time()
-			sendHeader(header)
+			send_header(header)
 			receive()
 			end = process_time()
 			diff = end - start
@@ -114,6 +114,6 @@ if __name__ == "__main__":
 	sock.connect(server_adr)
 	get_server_infos()
 	# measure_process_time() # uncomment sendHeader(header) and receive() and run measure_process_time() instead
-	sendHeader(header)
+	send_header(header)
 	receive()
 	sock.close()

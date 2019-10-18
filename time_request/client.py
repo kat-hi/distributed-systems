@@ -3,8 +3,8 @@ from datetime import datetime
 import re
 
 # using measure_process_time() requires the following packages:
-from time import process_time
-from numpy import *
+# from time import process_time
+# from numpy import *
 
 server_adr = ("dbl44.beuth-hochschule.de", 21)
 
@@ -92,7 +92,7 @@ note: actually the data that is used for this socket-connection is not suitable 
 '''
 def measure_process_time():
 	t = 0
-	requests = 20
+	requests = 500
 	stats_values = []
 	with open('process-time-checklist.txt', 'w') as ptc:
 		for i in range(1, requests):

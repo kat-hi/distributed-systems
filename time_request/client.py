@@ -87,7 +87,8 @@ def get_server_infos():
 '''
 this function writes a txt-file with a list of process times, the mean value of time and standard deviation
 it can be used to compare different socket configurations such as SOCK_STREAM, NODELAY ..etc..
-note: actually the data that is used for this socket-connection is not suitable for getting considerable results. better test with large streaming data
+note: actually the data that is used for this socket-connection is not suitable for getting considerable results. 
+better test with large streaming data
 '''
 '''
 def measure_process_time():

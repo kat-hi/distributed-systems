@@ -16,7 +16,9 @@ def receive(sock):
 			if response[1] == 'error':
 				check_error(response)
 			elif response[1] == 'group notify':
-				print(response)
+				lines = int(response[3]) * (-1)
+				for line in range(lines, -1):
+					print(line)
 			return response
 
 
@@ -58,8 +60,8 @@ def connect(sock):
 
 def check_error(response):
 	if response[1] == 'error':
-		lines = response[2]
-		for line in range(-lines,-1):
+		lines = int(response[3]) *(-1)
+		for line in range(lines,-1):
 			print(line)
 		return False
 	else:

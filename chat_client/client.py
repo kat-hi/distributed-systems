@@ -3,11 +3,6 @@ import threading
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-message_type = ['request time', 'response time', 'group join', 'group leave',
-                'group notify', 'user join', 'user leave', 'user text notify',
-                'user file notify', 'error']
-
-
 def receive(sock):
 	while True:
 		response = str(sock.recv(512), 'UTF-8')
@@ -70,8 +65,7 @@ def check_error(response):
 
 if __name__ == "__main__":
 	connect(sock)
-	thread = threading.Thread(target=receive, args=(sock,))
-	response = thread.start()
+	threading.Thread(target=receive, args=(sock,)).start()
 	group_join(sock)
 	group_notify(sock)
 	group_leave(sock)

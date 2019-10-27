@@ -13,7 +13,9 @@ def receive(sock):
 		response = str(sock.recv(512), 'UTF-8')
 		if response != '':
 			response = response.split('\r\n')
-			if response[1] == 'group notify':
+			if response[1] == 'error':
+				check_error(response)
+			elif response[1] == 'group notify':
 				print(response)
 			return response
 
@@ -22,7 +24,6 @@ def group_join(sock):
 	join_group = ['dslp/2.0\r\n', 'group join\r\n', 'Übung\r\n', 'dslp/body\r\n']
 	try:
 		for line in join_group:
-			print(line)
 			sock.send(bytearray(line, "UTF-8"))
 	except socket.error as e:
 		print(e)
@@ -49,12 +50,20 @@ def group_leave(sock):
 
 
 def connect(sock):
-	global STATE
 	server_adr = ("dbl44.beuth-hochschule.de", 21)
 	try:
 		sock.connect(server_adr)
 	except socket.error as e:
 		print("Something went wrong. Connection failed.")
+
+def check_error(response):
+	if response[1] == 'error':
+		lines = response[2]
+		for line in range(-lines,-1):
+			print(line)
+		return False
+	else:
+		return True
 
 
 if __name__ == "__main__":

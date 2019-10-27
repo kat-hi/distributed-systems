@@ -1,7 +1,8 @@
 #### how to run the files
 ```
 $ make compile # just for fun
-$ make run
+$ make run # always
+$ make run_extra # sometimes
 ```
 
 #### time_request

@@ -7,34 +7,23 @@ message_type = ['request time', 'response time', 'group join', 'group leave',
                 'group notify', 'user join', 'user leave', 'user text notify',
                 'user file notify', 'error']
 
-HISTORY = ''
-STATE = ''
-TYPE = ''
-
 
 def receive(sock):
-	global STATE, HISTORY, TYPE
 	while True:
 		response = str(sock.recv(512), 'UTF-8')
 		if response != '':
 			response = response.split('\r\n')
 			if response[1] == 'group notify':
 				print(response)
-			HISTORY = STATE
-			TYPE = response[1]
 			return response
 
 
 def group_join(sock):
-	global STATE, HISTORY
-	attempt = 0
 	join_group = ['dslp/2.0\r\n', 'group join\r\n', 'Übung\r\n', 'dslp/body\r\n']
 	try:
 		for line in join_group:
 			print(line)
 			sock.send(bytearray(line, "UTF-8"))
-			HISTORY = STATE
-			STATE = 'JOINING'
 	except socket.error as e:
 		print(e)
 
@@ -42,7 +31,6 @@ def group_join(sock):
 def group_notify(sock):
 	static_message = "<p style='height=400px;color:red'>\u2764 \u2764 \u2764 \u2764 \u2764 \u2764 </p>\r\n"
 	notify_group = ['dslp/2.0\r\n', 'group notify\r\n', 'Übung\r\n', '1\r\n', 'dslp/body\r\n', static_message]
-
 	try:
 		for line in notify_group:
 			sock.send(bytearray(line, 'UTF-8'))
@@ -52,7 +40,7 @@ def group_notify(sock):
 
 def group_leave(sock):
 	leave_group = ['dslp/2.0\r\n', 'group leave\r\n', 'Übung\r\n', 'dslp/body\r\n']
-	if input != '':
+	if input() != '':
 		try:
 			for line in leave_group:
 				sock.send(bytearray(line, 'UTF-8'))
@@ -60,18 +48,11 @@ def group_leave(sock):
 			print("leaving group was not successful")
 
 
-def catch_error_message(resonse):
-	global STATE
-	STATE = 'NO ERROR'
-	pass
-
-
 def connect(sock):
 	global STATE
 	server_adr = ("dbl44.beuth-hochschule.de", 21)
 	try:
 		sock.connect(server_adr)
-		STATE = "CONNECTING"
 	except socket.error as e:
 		print("Something went wrong. Connection failed.")
 

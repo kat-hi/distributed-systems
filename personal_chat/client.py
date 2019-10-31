@@ -20,6 +20,8 @@ def connect(sock):
 
 def receive(sock):
 	while True:
+		print('inside receive')
+		print(STATE)
 		if STATE == 'LEAVE':
 			break
 		response = str(sock.recv(512), 'UTF-8')
@@ -34,43 +36,46 @@ def receive(sock):
 
 
 def print_message(response):
+	print('inside send_text')
+	print(response[6])
+
+	'''
 	num_lines = int(response[3]) * (-1)
 	for line in range(num_lines, -1):
 		print('(' + response[2] + ') ' + response[line])
-
+	'''
 
 def print_error(response):
-	if response[1] == 'error':
-		num_lines = int(response[3]) *(-1)
-		for line in range(num_lines,-1):
-			print(response[line])
-		return False
-	else:
-		return True
-
+	print(response[4])
+	'''
+	num_lines = int(response[3]) *(-1)
+	for line in range(num_lines,-1):
+		print(response[line])
+	'''
 
 def user_join(sock):
 	join = ['dslp/2.0', 'user join', str(sys.argv[1]), 'dslp/body']
+	print('Joining with username ' + str(sys.argv[1]))
 	for line in join:
 		sock.send(bytearray(line, "UTF-8"))
 
 
 def send_text(sock):
+	print('inside send_text')
 	global STATE
 	while True:
 		message = input()
 		if message == '':
 			STATE = 'LEAVE'
 			break
-
-		sock.send(bytearray(message, "UTF-8"))
-
-def user_text_notify():
-	text_notify = ['dslp/2.0', 'user', 'text notify', 'Heinz', 'Gregor', '2', 'dslp/body']
+		text_notify = ['dslp/2.0', 'user', 'text notify', 'Kat', 'Ali', '1', 'dslp/body', message]
+		for line in text_notify:
+			sock.send(bytearray(line, "UTF-8"))
 
 
 def user_leave(sock):
-	leave = ['dslp/2.0', 'user leave', 'Heinz', 'dslp/body']
+	print('inside user_leave')
+	leave = ['dslp/2.0', 'user leave', 'Kat', 'dslp/body']
 	for line in leave:
 		sock.send(bytearray(line, "UTF-8"))
 

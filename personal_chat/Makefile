@@ -1,4 +1,4 @@
 compile:
 	"Hi it's python"
 run:
-	@python3 client.py kat
+	@python3 client.py Kat

@@ -1,6 +1,7 @@
 import socket
 import threading
 import sys
+import re
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # send 'end' to leave the chat, 'STATE NOTIFY' will change to 'STATE LEAVE'
@@ -8,7 +9,7 @@ STATE = 'NOTIFY'
 message_type = ['request time', 'response time', 'group join', 'group leave',
                 'group notify', 'user join', 'user leave', 'user text notify',
                 'user file notify', 'error']
-
+username = sys.argv[1]
 
 def connect(sock):
 	server_adr = ("dbl44.beuth-hochschule.de", 21)
@@ -54,8 +55,8 @@ def print_error(response):
 	'''
 
 def user_join(sock):
-	join = ['dslp/2.0', 'user join', str(sys.argv[1]), 'dslp/body']
-	print('Joining with username ' + str(sys.argv[1]))
+	join = ['dslp/2.0', 'user join', username, 'dslp/body']
+	print('Joining with username ' + username)
 	for line in join:
 		sock.send(bytearray(line, "UTF-8"))
 
@@ -68,14 +69,17 @@ def send_text(sock):
 		if message == '':
 			STATE = 'LEAVE'
 			break
-		text_notify = ['dslp/2.0', 'user', 'text notify', 'Kat', 'Ali', '1', 'dslp/body', message]
+		else:
+			receivername = message.split(':')[0]
+			message = message.split(':')[1]
+		text_notify = ['dslp/2.0', 'user', 'text notify', username, receivername, '1', 'dslp/body', message]
 		for line in text_notify:
 			sock.send(bytearray(line, "UTF-8"))
 
 
 def user_leave(sock):
 	print('inside user_leave')
-	leave = ['dslp/2.0', 'user leave', 'Kat', 'dslp/body']
+	leave = ['dslp/2.0', 'user leave', username, 'dslp/body']
 	for line in leave:
 		sock.send(bytearray(line, "UTF-8"))
 

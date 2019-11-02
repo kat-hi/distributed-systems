@@ -3,11 +3,14 @@ import threading
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# send 'exit' to leave the chat, 'STATE NOTIFY' will change to 'STATE LEAVE'
+# send 'end' to leave the chat, 'STATE NOTIFY' will change to 'STATE LEAVE'
 STATE = 'NOTIFY'
+
 
 def receive(sock):
 	while True:
+		if STATE == 'LEAVE':
+			return
 		response = str(sock.recv(512), 'UTF-8')
 		if response != '':
 			response = response.split('\r\n')
@@ -28,8 +31,10 @@ def group_join(sock):
 
 def group_notify(sock):
 	global STATE
+	if STATE == 'LEAVE':
+		return
 	message = input()
-	if message == 'exit':
+	if message == 'end':
 		STATE = 'LEAVE'
 	notify_group = ['dslp/2.0\r\n', 'group notify\r\n', 'Übung\r\n', '1\r\n', 'dslp/body\r\n', message+'\r\n']
 	try:
@@ -41,7 +46,7 @@ def group_notify(sock):
 
 def group_leave(sock):
 	leave_group = ['dslp/2.0\r\n', 'group leave\r\n', 'Übung\r\n', 'dslp/body\r\n']
-	if input() != '':
+	if STATE == 'LEAVE':
 		try:
 			for line in leave_group:
 				sock.send(bytearray(line, 'UTF-8'))
@@ -73,8 +78,10 @@ if __name__ == "__main__":
 	thread.start()
 	group_join(sock)
 	while True:
-		group_notify(sock)
 		if STATE == 'LEAVE':
 			break
+		group_notify(sock)
+		print(STATE)
 	group_leave(sock)
 	sock.close()
+

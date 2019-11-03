@@ -5,7 +5,7 @@ import sys
 '''
 @learning1: def receive(sock) stays in a sys-call: if it's interrupted and the signal handler does not raise an exception,
 the method now retries the system call instead of raising an InterruptedError exception (pep475) but many modules don't 
-handle this exception. fixing this in higher-level libs takes too long time. proposal is to handle this in wrapper of stdlib.
+handle this exception. fixing this in higher-level libs takes too long time. proposal is to handle this in wrapper of stdlib. (pep)
 long story short: that's why in python there is no exception handling needed with ending this recv-syscall
 '''
 

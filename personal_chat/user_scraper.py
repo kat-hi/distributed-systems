@@ -3,36 +3,42 @@ import itertools
 import socket
 import threading
 import sys
-
+import mmap
 '''
 ideas on how to get all registered users
-#1 this script is highly uneffective
-#2 udp? /broadcast
-#3 listen like a server
-#4 webscraping
+#1 this script: it is highly uneffective! process is always killed. WIP: trying memory mapped files
+#2 udp/connectionless recv: but how do I get dslp-responses containing the usernames?
+#3 listen like a server... but cannot bind to the same address... / port forwarding.. (sshtunnel.py)
+#4 fetch user names from server-log (webscraping.py)
+#5 serverlog: "Performing group membership cleanup ... " maybe fetching users via "group membership"?
 
 '''
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-possible_namelist = []
 
-
+#charset = str(string.ascii_letters)
 #charset = str(string.ascii_lowercase)
 charset = 'abcdefghijklmnoprstu'
-print(charset)
-def convertTuple(tup):
-	str = ''.join(tup)
-	return str
-
-with open('file.txt', 'w') as file:
-		names = itertools.permutations(charset,3)
-		for name in names:
-			stri = convertTuple(name)
-			file.writelines(stri+'\r\n')
-			possible_namelist.append(str)
-file.close()
 
 username = ''
 userlist = []
+
+wordlength = sys.argv[1]
+
+
+def get_permutations(wordlength):
+	def convertTuple(tup):
+		str = ''.join(tup)
+		return str
+
+	# run this with wordlength 3-7 if possible, so you get all char combinations with wordlength 3-7
+	with open('file.txt', 'r') as file:
+		with mmap.mmap(file.fileno(), 0, access=mmap.ACCESS_WRITE) as buffer:
+			names = itertools.permutations(charset,wordlength)
+			for name in names:
+				stri = convertTuple(name)
+				buffer.writelines(stri+'\r\n')
+			buffer.close()
+			file.close()
 
 
 def connect(sock):
@@ -56,27 +62,29 @@ def receive(sock):
 				userlist.append(username)
 
 def test(sock):
-	print('teststart')
 	global username
-	for user in possible_namelist:
-		username = user
-		text_notify = ['dslp/2.0\r\n', 'user text notify\r\n', 'anonymous\r\n',
-	                   str(user) + '\r\n', '1\r\n', 'dslp/body\r\n', 'gotcha\r\n']
-		for line in text_notify:
-			sock.send(bytearray(line, "UTF-8"))
+	with open("file.txt", "r") as file:
+		with mmap.mmap(file.fileno(), 0) as buffer:
+			for user in buffer:
+				username = user
+				text_notify = ['dslp/2.0\r\n', 'user text notify\r\n', 'anonymous\r\n',
+			                   str(user) + '\r\n', '1\r\n', 'dslp/body\r\n', 'gotcha\r\n']
+				for line in text_notify:
+					sock.send(bytearray(line, "UTF-8"))
 
 def printlist():
-	print('start print')
 	global userlist
 	with open('usernames.txt', 'w') as file:
-		for name in userlist:
-			file.write(name)
-			print(name)
+		with mmap.mmap(file.fileno(), 0) as buffer:
+			for name in userlist:
+				file.write(name)
+				print(name)
 
 if __name__ == "__main__":
-	print('start')
+	get_permutations(wordlength) # write all possible combinations in file.txt
 	connect(sock)
-	thread = threading.Thread(target=receive, args=(sock,), daemon=True)
+	thread = threading.Thread(target=receive, args=(sock,), daemon=True) # checks if received message is an error message
+	# if not -> user exists and userlist.append(user)
 	thread.start()
 	test(sock)
 	printlist()

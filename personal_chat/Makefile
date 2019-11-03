@@ -1,6 +1,7 @@
 compile:	
 	@echo ">>>> Was macht eine Elster im Rechenzentrum?"
-	@sleep 2
+	@sleep 3.5
+	@echo ""
 	@echo "                         ▒▒"
 	@sleep 1                                     
 	@echo "                         ▒▒"
@@ -12,9 +13,8 @@ compile:
 	@echo "▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒  Sie Cloud Server!   ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒"
 	@echo "****************                      *****************"
 	@echo ""
-	@sleep 0.4
-	@echo "███████████████████████  :D  ██████████████████████████"
 	@echo "*******************************************************"
+	@sleep 1
 run:
 	@python3 client.py jsonLOVER1000
 

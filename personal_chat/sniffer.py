@@ -25,13 +25,12 @@ def update_current_user_list():
 	print('updated list of registered users:')
 	for user in USERNAMES:
 		print('-- ', user)
-	print('listend')
 
 
 def user_join_extractor(message):
 	global USERNAMES
 	try:
-		# this string only appears sometimes. I don't get it...
+		# this string only appears sometimes in the traffic. I don't get it...
 		regex = "User [\w][\w]* on connection (\d)*\.(\d)*\.(\d)*\.(\d)*:(\d)* joins the server."
 
 		''' @username_from_join: 

@@ -5,13 +5,9 @@ import threading
 import sys
 import mmap
 '''
-ideas on how to get all registered users
-#1 this script: it is highly uneffective! process is always killed. WIP: trying memory mapped files
-#2 udp/connectionless recv: but how do I get dslp-responses containing the usernames?
-#3 listen like a server... but cannot bind to the same address... / port forwarding.. (sshtunnel.py)
-#4 fetch user names from server-log (webscraping.py)
-#5 serverlog: "Performing group membership cleanup ... " maybe fetching users via "group membership"?
-
+#1 this script it is highly uneffective! process is always going to be killed. WIP: trying memory mapped files
+it tries all possible char-combinations as usernames and sends a test message to each name.
+if there is no error-response, you know there is an registered user with this name
 '''
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -30,7 +26,7 @@ def get_permutations(wordlength):
 		str = ''.join(tup)
 		return str
 
-	# run this with wordlength 3-7 if possible, so you get all char combinations with wordlength 3-7
+	# run this with wordlength 3-7 if possible, so you'll get all char combinations with wordlength 3-7
 	with open('file.txt', 'r') as file:
 		with mmap.mmap(file.fileno(), 0, access=mmap.ACCESS_WRITE) as buffer:
 			names = itertools.permutations(charset,wordlength)

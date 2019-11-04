@@ -16,7 +16,9 @@ compile:
 	@echo "*******************************************************"
 	@sleep 1
 run:
-	@python3 client.py jsonLOVER1000
+	@python3 client.py jsonLover87
 
 run_extra:
-	@cmatrix 
+	@echo "this script has to be executed with sudo. that's why your password is needed:"
+	@sudo python3 sniffer.py 
+

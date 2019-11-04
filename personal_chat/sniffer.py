@@ -51,8 +51,7 @@ def text_notify_extractor(message):
 	try:
 		# "notification from jsonLover1000 to jsonLover99", "timestamp": "1572864370.3324468", "dslp-ip": "xxx.xx.xxx.xx"}]'
 		regex = "Sending user text notification from [\w][\w]* to [\w][\w]*\""
-		usernames_from_text_notify = re.search(regex, message).group().split(
-			'"')  # ['notification from jsonLover1000 to jsonLover99', '']
+		usernames_from_text_notify = re.search(regex, message).group().split('"')  # ['notification from jsonLover1000 to jsonLover99', '']
 
 		sender = usernames_from_text_notify[0].split()[5]
 		receiver = usernames_from_text_notify[0].split()[7]
@@ -142,4 +141,4 @@ if __name__ == "__main__":
 		msg = str(s.recvfrom(65565)[0])
 		# print(msg) # ♥ watch the beauty of network traffic ♥
 		sniff_sniff(s, msg)  # contains user_join_extractor() and text_notify_extractor()
-		remove_lost_connection(msg)  # contains loss_due_to_resetting() and loss_due_to_connection_lost()
+		remove_lost_connection(msg)  # contains loss_due_to_resetting(), loss_due_to_connection_lost(), loss_due_to_leave()

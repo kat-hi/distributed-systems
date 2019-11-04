@@ -3,7 +3,7 @@ import socket
 
 ''' fetching networking traffic, extracting IPs and dslp-USERNAMES since dslp is not encrypted it is possible to extract
 names and ips of all users joining the dslp-server
-@ note: there are different packet-contents comparing packets fetched  working at RIS and working at home..kinda messed up now
+@ note: there are different packet-contents when comparing packets fetched at RIS and fetched at home..kinda messed up now
 @ TODO text_notify_extractor still needs a regex for extracting sender-ip, so that remove_lost_connection() works properly '''
 
 s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)

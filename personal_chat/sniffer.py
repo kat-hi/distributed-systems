@@ -33,8 +33,11 @@ def user_join_extractor(message):
 	try:
 		# this string only appears sometimes. I don't get it...
 		regex_user_ip = "User [\w][\w]* on connection (\d)*\.(\d)*\.(\d)*\.(\d)*:(\d)* joins the server."
-		''' @username_from_join: extract sentence "User x on connection x joins the server" from the whole tcp-paket
-		and .split() sentence based on contained whitespaces and take the second word (which is the username) '''
+
+		''' @username_from_join: 
+		-> extract sentence "User x on connection x joins the server" from tcp-paket 
+		-> .split() sentence based on contained whitespaces 
+		-> take the second word (which is the username) '''
 		username_from_join = re.search(regex_user_ip, message).group().split()[1]
 		ip_from_join = re.search(regex_user_ip, message).group().split()[4].split(':')[0]  # extract ip without port
 

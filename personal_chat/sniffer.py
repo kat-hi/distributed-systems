@@ -17,21 +17,22 @@ def connect(sock):
 	except socket.error:
 		print("Something went wrong. Connection failed.")
 
-# it works
+
 def user_join_extractor(response):
 	global usernames
 	try:
-		regex_user_ip = "User [\w][\w]* on connection (\d)*.(\d)*.(\d)*.(\d)*:(\d)* joins the server."
+		regex_user_ip = "User [\w][\w]* on connection (\d)*\.(\d)*\.(\d)*\.(\d)*:(\d)* joins the server."
 		username_from_join = re.search(regex_user_ip, response).group().split()[1]
 		ip_from_join = re.search(regex_user_ip, response).group().split()[4].split(':')[0]  # extract ip without port
 
-		# if username_from_join not in usernames:
-		usernames.append(username_from_join)
-		print(username_from_join + ' ' + ip_from_join)
+		if username_from_join not in usernames:
+			usernames.append(username_from_join)
+			print('From join_extractor: ' + username_from_join + ' | ' + ip_from_join)
+			update_current_user_list()
 	except AttributeError:
 		pass
 
-# it works
+
 def text_notify_extractor(response):
 	global usernames
 	try:
@@ -46,13 +47,14 @@ def text_notify_extractor(response):
 
 		if sender not in usernames:
 			usernames.append((sender,))
-			print(sender)
+			print('From notify_extractor: ' + sender)
+			update_current_user_list()
 			# if receiver not in usernames:
 			usernames.append((receiver,))
-			print(receiver)
+			print('From notify_extractor: ' + receiver)
+			update_current_user_list()
 	except AttributeError:
 		pass
-
 
 def sniff_sniff(s):
 	while True:
@@ -71,31 +73,43 @@ def sniff_sniff(s):
 		remove_lost_connection(response)
 
 
-def check_ip_in_list(ip):
+def is_ip_in_list(ip):
 	for info_tuple in usernames:
-		if ip == info_tuple(1):
+		print(ip, info_tuple)
+		if ip == info_tuple[1]:
+			print("IP", ip)
+			print("TUPLE", info_tuple)
 			return info_tuple
 	return False
 
+def remove_ip_from_list(check_value):
+	if check_value == False:
+		pass
+	else:
+		usernames.remove(check_value)
+		update_current_user_list()
 
 def remove_lost_connection(response):
-	#\"dslp-ip\"(.)* (\d)*.(\d)*.(\d)*.(\d)*\"\}]?
-	try:
-		ip = "\"dslp-ip\"(.)* (\d)*.(\d)*.(\d)*.(\d)*\"\}]?"
-		ip_from_sender = re.search(ip, response).group()
-		print('RESETTING', ip_from_sender.split())
+	# first use case:
+	# ["newmessage",{"message":"Resetting state machine.","timestamp":"1572879071.8838224","dslp-ip":"10.128.0.1"}]'
+	# second use case:
+	# message":"Connection to 10.128.0.1:52887 lost.
 
-		return_value = check_ip_in_list(ip_from_sender)
-		if return_value == False:
-			pass
-		else:
-			usernames.remove(return_value)
+	try:
+		connection_lost_regex = "(\d)*\.(\d)*\.(\d)*\.(\d)*:(\d)* lost"
+		lost_ip = re.search(connection_lost_regex,response).group().split(':')[0]
+		remove_ip_from_list(is_ip_in_list(lost_ip))
 	except AttributeError:
 		pass
 
-#["newmessage",{"message":"User jsonLover0123 removed from server due to disconnect.","timestamp":"1572879039.5032785","dslp-ip":"95.91.247.8"}]
-# essage":"Connection to 10.128.0.1:52887 lost.
-#,["newmessage",{"message":"Resetting state machine.","timestamp":"1572879071.8838224","dslp-ip":"10.128.0.1"}]'
+	try:
+		reset_regex = "Resetting (.)*(\d)*\.(\d)*\.(\d)*\.(\d)*\"}]?"
+		lost_ip = re.search(reset_regex, response).group().split("\"")[8]
+		remove_ip_from_list(is_ip_in_list(lost_ip))
+	except AttributeError:
+		pass
+
+
 def update_current_user_list():
 	global usernames
 	print('_________________________')

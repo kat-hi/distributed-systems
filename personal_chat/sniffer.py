@@ -71,6 +71,7 @@ def text_notify_extractor(message):
 USERNAMES is a list of tuples (username,ip)
 this method returns either the user_tuple to be deleted or "False" if the ip is not listed '''
 def is_ip_in_list(ip):
+	global USERNAMES
 	for user_tuple in USERNAMES:
 		if ip == user_tuple[1]:
 			return user_tuple
@@ -79,6 +80,7 @@ def is_ip_in_list(ip):
 
 ''' this method is based on the check_value returned by is_ip_in_list() '''
 def remove_ip_from_list(check_value):
+	global USERNAMES
 	if not check_value:
 		pass
 	else:

@@ -24,21 +24,25 @@ def connect(sock):
 def update_current_user_list():
 	global USERNAMES
 	print('_________________________')
-	print('new list:')
+	print('updated list of registered users:')
 	for user in USERNAMES:
 		print('-- ', user)
+
 
 def user_join_extractor(message):
 	global USERNAMES
 	try:
 		regex_user_ip = "User [\w][\w]* on connection (\d)*\.(\d)*\.(\d)*\.(\d)*:(\d)* joins the server."
+		'''
+		@username_from_join: extract sentence "User x on connection x joins the server" from the whole tcp-paket
+		and .split() sentence based on contained whitespaces and take the second word (which is the username)
+		'''
 		username_from_join = re.search(regex_user_ip, message).group().split()[1]
 		ip_from_join = re.search(regex_user_ip, message).group().split()[4].split(':')[0]  # extract ip without port
 
-		if username_from_join not in USERNAMES:
-			USERNAMES.append((username_from_join, ip_from_join))
-			print('From join_extractor: ' + username_from_join + ' | ' + ip_from_join)
-			update_current_user_list()
+		#if username_from_join not in USERNAMES:
+		USERNAMES.append((username_from_join, ip_from_join))
+		update_current_user_list()
 	except AttributeError:
 		pass
 
@@ -46,20 +50,19 @@ def user_join_extractor(message):
 def text_notify_extractor(message):
 	global USERNAMES
 	try:
-		# "Sending user text notification from jsonLover1000 to jsonLover99", "timestamp": "1572864370.3324468", "dslp-ip": "xxx.xx.xxx.xx"}]'
-		regex_USERNAMES = "Sending user text notification from [\w][\w]* to [\w][\w]*\""
-		USERNAMES_from_text_notify = re.search(regex_USERNAMES, message).group().split('"')
-		sender = USERNAMES_from_text_notify[0].split()[5]
-		receiver = USERNAMES_from_text_notify[0].split()[7]
+		# "notification from jsonLover1000 to jsonLover99", "timestamp": "1572864370.3324468", "dslp-ip": "xxx.xx.xxx.xx"}]'
+		regex_usernames = "Sending user text notification from [\w][\w]* to [\w][\w]*\""
+		usernames_from_text_notify = re.search(regex_usernames, message).group().split('"') # ['notification from jsonLover1000 to jsonLover99', '']
 
-		if sender not in USERNAMES:
-			USERNAMES.append((sender,))
-			# print('From notify_extractor: ' + sender)
-			update_current_user_list()
-		if receiver not in USERNAMES:
-			USERNAMES.append((receiver,))
-			# print('From notify_extractor: ' + receiver)
-			update_current_user_list()
+		sender = usernames_from_text_notify[0].split()[5]
+		receiver = usernames_from_text_notify[0].split()[7]
+
+		#sender not in USERNAMES:
+		USERNAMES.append((sender,'unknown')) # ip-regex is still missing
+		update_current_user_list() # ip-regex is still missing
+		#if receiver not in USERNAMES:
+		USERNAMES.append((receiver,'unknown'))
+		update_current_user_list()
 	except AttributeError:
 		pass
 
@@ -85,16 +88,18 @@ def remove_ip_from_list(check_value):
 		update_current_user_list()
 
 
-def loss_due_to_resetting(message):
+def loss_due_to_connection_lost(message):
+	# {"message": "Connection to xx.xx.xxx.x:xxxxx lost.", "timestamp": "1572879039.475101", "dslp-ip": "xx.xx.xxx.x"}
 	try:
 		connection_lost_regex = "(\d)*\.(\d)*\.(\d)*\.(\d)*:(\d)* lost"
-		lost_ip = re.search(connection_lost_regex, message).group().split(':')[0]
+		lost_ip = re.search(connection_lost_regex, message).group().split(':')[0] # get rid of the port
 		remove_ip_from_list(is_ip_in_list(lost_ip))
 	except AttributeError:
 		pass
 
 
-def loss_due_to_connection_lost(message):
+def loss_due_to_resetting(message):
+	# {"message":"Resetting state machine.","timestamp":"1572864370.338236","dslp-ip":"141.64.203.45"}]'
 	try:
 		reset_regex = "Resetting (.)*(\d)*\.(\d)*\.(\d)*\.(\d)*\"}]?"
 		lost_ip = re.search(reset_regex, message).group().split("\"")[8]
@@ -104,20 +109,20 @@ def loss_due_to_connection_lost(message):
 
 
 '''
-this method is a wrapper for two uses cases ex
+this method is a wrapper for two methods extracting ip and username 
+each method is based on a different scenario/use case based on DSLP
 '''
-
 def sniff_sniff(s, message):
 	# extract username and ip from 'user join' message
 	user_join_extractor(message)
 
-	# extract USERNAMES from users already joined. (fetch infos with user text notify messages)
+	# extract usernames from users already joined. (fetch infos with 'user text notify' messages)
 	text_notify_extractor(message)
 
 
 '''
 this method is a wrapper for two methods checking if an ip can be removed from username-list. 
-each method is based on a different scenario/use case
+each method is based on a different scenario/use case based on DSLP
 '''
 def remove_lost_connection(message):
 	# first use case: {"message":"Resetting state machine.","timestamp":"1572879071.8838224","dslp-ip":"xx.xxx.x.x"}]'

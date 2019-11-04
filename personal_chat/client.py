@@ -54,12 +54,14 @@ multiplied with -1 it can be used by the range()-function to print all the lines
 [ but it does not work and I could not figure it out why.. so it's now a static line-reading solution ]
 '''
 
+
 def print_message(response):
 	print('(' + response[2] + ')' + response[6])
 	'''loveletterlines = int(response[4]) * (-1)
 	for line in range(loveletterlines, -0):
 		print(response[line])
 	'''
+
 
 def print_error(response):
 	print('ERROR: ' + response[4])
@@ -69,17 +71,21 @@ def print_error(response):
 		print('ERROR ', str(response[line]))
 	'''
 
+
 def user_join(sock):
 	join = ['dslp/2.0\r\n', 'user join\r\n', username + '\r\n', 'dslp/body\r\n']
 	print('Joining with username ' + username)
 	for line in join:
 		sock.send(bytearray(line, "UTF-8"))
 
+
 '''
 this method checks and sends input. 
 first: there is a check for keywords, that would end the session.
 second: the required input (with respect to our task it has to be 'receivername: textmessage') is split into name and message
 '''
+
+
 def send_text(sock):
 	while True:
 		message = input()
@@ -133,4 +139,3 @@ if __name__ == "__main__":
 	send_text(sock)
 	user_leave(sock)
 	sock.close()
-

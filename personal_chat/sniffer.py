@@ -32,14 +32,14 @@ def user_join_extractor(message):
 	global USERNAMES
 	try:
 		# this string only appears sometimes. I don't get it...
-		regex_user_ip = "User [\w][\w]* on connection (\d)*\.(\d)*\.(\d)*\.(\d)*:(\d)* joins the server."
+		regex = "User [\w][\w]* on connection (\d)*\.(\d)*\.(\d)*\.(\d)*:(\d)* joins the server."
 
 		''' @username_from_join: 
 		-> extract sentence "User x on connection x joins the server" from tcp-paket 
 		-> .split() sentence based on contained whitespaces 
 		-> take the second word (which is the username) '''
-		username_from_join = re.search(regex_user_ip, message).group().split()[1]
-		ip_from_join = re.search(regex_user_ip, message).group().split()[4].split(':')[0]  # extract ip without port
+		username_from_join = re.search(regex, message).group().split()[1]
+		ip_from_join = re.search(regex, message).group().split()[4].split(':')[0]  # extract ip without port
 
 		USERNAMES.append((username_from_join, ip_from_join))
 		update_current_user_list()
@@ -51,8 +51,8 @@ def text_notify_extractor(message):
 	global USERNAMES
 	try:
 		# "notification from jsonLover1000 to jsonLover99", "timestamp": "1572864370.3324468", "dslp-ip": "xxx.xx.xxx.xx"}]'
-		regex_usernames = "Sending user text notification from [\w][\w]* to [\w][\w]*\""
-		usernames_from_text_notify = re.search(regex_usernames, message).group().split(
+		regex = "Sending user text notification from [\w][\w]* to [\w][\w]*\""
+		usernames_from_text_notify = re.search(regex, message).group().split(
 			'"')  # ['notification from jsonLover1000 to jsonLover99', '']
 
 		sender = usernames_from_text_notify[0].split()[5]

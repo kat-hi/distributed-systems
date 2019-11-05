@@ -7,12 +7,12 @@ names and ips of all users joining the dslp-server
 @ TODO text_notify_extractor still needs a regex for extracting sender-ip, so that remove_lost_connection() works properly '''
 
 s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
-print('start sniffing...')
 USERNAMES = []
 
 
 def connect(sock):
 	server_adr = ("dbl44.beuth-hochschule.de", 21)
+	print('start sniffing...')
 	try:
 		sock.connect(server_adr)
 	except socket.error:
@@ -39,7 +39,7 @@ def user_join_extractor(message):
 		-> take the second word (which is the username) '''
 		username_from_join = re.search(regex, message).group().split()[1]
 		ip_from_join = re.search(regex, message).group().split()[4].split(':')[0]  # extract ip without port
-
+		#print(username_from_join, ip_from_join)
 		USERNAMES.append((username_from_join, ip_from_join))
 		update_current_user_list()
 	except AttributeError:
@@ -55,7 +55,8 @@ def text_notify_extractor(message):
 
 		sender = usernames_from_text_notify[0].split()[5]
 		receiver = usernames_from_text_notify[0].split()[7]
-
+		print('Someone that\'s sending: " + sender')
+		print('Someone that\'s receiving: " + receiver')
 		USERNAMES.append((sender, 'unknown'))  # ip-regex is still missing
 		update_current_user_list()
 
@@ -91,6 +92,7 @@ def loss_due_to_connection_lost(message):
 	try:
 		regex = "(\d)*\.(\d)*\.(\d)*\.(\d)*:(\d)* lost"
 		lost_ip = re.search(regex, message).group().split(':')[0]  # get rid of the port
+		print('lost ip: lost ', lost_ip)
 		remove_ip_from_list(is_ip_in_list(lost_ip))
 	except AttributeError:
 		pass
@@ -101,7 +103,8 @@ def loss_due_to_resetting(message):
 	try:
 		regex = "Resetting (.)*(\d)*\.(\d)*\.(\d)*\.(\d)*\"}]?"
 		lost_ip = re.search(regex, message).group().split("\"")[8]
-		remove_ip_from_list(is_ip_in_list(lost_ip))
+		print('lost ip: reset ', lost_ip)
+		#remove_ip_from_list(is_ip_in_list(lost_ip))
 	except AttributeError:
 		pass
 
@@ -113,7 +116,8 @@ def loss_due_to_leave(message):
 	try:
 		regex = "Access-Control-Allow-Credentials(.)*Connection\: close(.)*(\d)*\.(\d)*\.(\d)*\.(\d)*\"}]?"
 		lost_ip = re.search(regex, message).group().split("\"")[13]  # extract ip
-		remove_ip_from_list(is_ip_in_list(lost_ip))
+		print('lost ip: leave ', lost_ip)
+		#remove_ip_from_list(is_ip_in_list(lost_ip))
 	except AttributeError:
 		pass
 
@@ -130,15 +134,15 @@ def sniff_sniff(s, message):
 ''' this method is a wrapper for two methods checking if an ip can be removed from username-list. 
 each method is based on a different scenario/use case based on DSLP '''
 def remove_lost_connection(message):
-	loss_due_to_resetting(message)
+	#loss_due_to_resetting(message)
 	loss_due_to_connection_lost(message)
-	loss_due_to_leave(message)
+	# loss_due_to_leave(message)
 
 
 if __name__ == "__main__":
 	connect(s)
 	while True:
 		msg = str(s.recvfrom(65565)[0])
-		# print(msg) # ♥ watch the beauty of network traffic ♥
+		#print(msg) # ♥ watch the beauty of network traffic ♥
 		sniff_sniff(s, msg)  # contains user_join_extractor() and text_notify_extractor()
 		remove_lost_connection(msg)  # contains loss_due_to_resetting(), loss_due_to_connection_lost(), loss_due_to_leave()

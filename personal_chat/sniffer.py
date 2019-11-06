@@ -143,6 +143,6 @@ if __name__ == "__main__":
 	connect(s)
 	while True:
 		msg = str(s.recvfrom(65565)[0])
-		#print(msg) # ♥ watch the beauty of network traffic ♥
+		print(msg) # ♥ watch the beauty of network traffic ♥
 		sniff_sniff(s, msg)  # contains user_join_extractor() and text_notify_extractor()
 		remove_lost_connection(msg)  # contains loss_due_to_resetting(), loss_due_to_connection_lost(), loss_due_to_leave()

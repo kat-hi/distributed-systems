@@ -13,7 +13,7 @@ class Ethernet():
 
 	def print_mac_addr(self):
 		dest = map('{:02x}'.format, self.destination) # convert dec into 2-digit-hex values
-		src = map('{:02x}'.format, self.source)
+		src = map('{:02x}'.format, self.source) # convert iterable into string
 		mac_addr_dest = ':'.join(dest).upper() # formatting into mac
 		mac_addr_src = ':'.join(src).upper()
 		print('Destination: ' + mac_addr_dest + ' | Source: ' + mac_addr_src +
@@ -26,8 +26,8 @@ class IPv4:
 		self.data = packet[20:]
 
 	def print_ip_header(self):
-		src = map('{:01d}'.format, self.source)
-		src_ip = '.'.join(src)
+		src = map('{:01d}'.format, self.source) # convert into 1-digit-dec value
+		src_ip = '.'.join(src) # convert iterable into string
 		target = map('{:01d}'.format, self.target)
 		target_ip = '.'.join(target)
 		print('TTL: ' + str(self.ttl) + ' | Source_IP: ' + src_ip + ' | Target_IP: ' + target_ip)

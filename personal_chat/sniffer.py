@@ -13,12 +13,12 @@ class Ethernet():
 		self.data = packet[14:]  # get Payload/data
 
 	def print_mac_addr(self):
-		dest = map('{:02x}'.format, self.destination) # convert dec into 2-digit-hex values
+		dest = map('{:02x}'.format, self.destination)  # convert dec into 2-digit-hex values
 		src = map('{:02x}'.format, self.source)
-		mac_addr_dest = ':'.join(dest).upper() # # convert iterable into string, formatting to mac
+		mac_addr_dest = ':'.join(dest).upper()  # convert iterable into string, formatting to mac
 		mac_addr_src = ':'.join(src).upper()
 		print('Destination: ' + mac_addr_dest + ' | Source: ' + mac_addr_src +
-		      ' | upper layer protocol: ' + str(self.upper_layer_protokoll)) # EtherType value of 0x0800 == ipv4
+		      ' | upper layer protocol: ' + str(self.upper_layer_protokoll))  # EtherType value of 0x0800 == ipv4
 
 
 class IPv4:
@@ -27,8 +27,8 @@ class IPv4:
 		self.data = packet[20:]
 
 	def print_ip_header(self):
-		src = map('{:01d}'.format, self.source) # convert into 1-digit-dec value
-		src_ip = '.'.join(src) # convert iterable into string
+		src = map('{:01d}'.format, self.source)  # convert into 1-digit-dec value
+		src_ip = '.'.join(src)  # convert iterable into string
 		target = map('{:01d}'.format, self.target)
 		target_ip = '.'.join(target)
 		print('TTL: ' + str(self.ttl) + ' | Source_IP: ' + src_ip + ' | Target_IP: ' + target_ip)

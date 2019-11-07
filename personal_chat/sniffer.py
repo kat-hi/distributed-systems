@@ -1,7 +1,7 @@
 import socket
 import struct
 
-s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.PACKET_FASTROUTE)
+s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
 
 class Ethernet():
 	def __init__(self, packet):
@@ -16,7 +16,7 @@ class Ethernet():
 		mac_addr_dest = ':'.join(dest).upper() # formatting into mac
 		mac_addr_src = ':'.join(src).upper()
 		print('Destination: ' + mac_addr_dest + ' | Source: ' + mac_addr_src +
-		      ' | Protokoll: ' + str(ascii(self.upper_layer_protokoll))) # EtherType value of 0x0800 == ipv4
+		      ' | upper layer protocol: ' + str(self.upper_layer_protokoll)) # EtherType value of 0x0800 == ipv4
 
 
 class IPv4:

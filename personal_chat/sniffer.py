@@ -54,3 +54,4 @@ if __name__ == "__main__":
 		# print(packet) # ♥ watch the beauty of network traffic
 		eth = extract_ethernet_frame(packet)
 		extract_ipv4_packet(eth.data, addr)
+		print('__________________________________')

@@ -12,8 +12,8 @@ class Ethernet():
 
 	def print_mac_addr(self):
 		dest = map('{:02x}'.format, self.destination) # convert dec into 2-digit-hex values
-		src = map('{:02x}'.format, self.source) # convert iterable into string
-		mac_addr_dest = ':'.join(dest).upper() # formatting into mac
+		src = map('{:02x}'.format, self.source)
+		mac_addr_dest = ':'.join(dest).upper() # # convert iterable into string, formatting to mac
 		mac_addr_src = ':'.join(src).upper()
 		print('Destination: ' + mac_addr_dest + ' | Source: ' + mac_addr_src +
 		      ' | upper layer protocol: ' + str(self.upper_layer_protokoll)) # EtherType value of 0x0800 == ipv4

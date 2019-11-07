@@ -1,7 +1,9 @@
 import socket
 import struct
+import string
 
 s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
+
 
 class Ethernet():
 	def __init__(self, packet):
@@ -47,10 +49,22 @@ def extract_ipv4_packet(packet, addr):
 	ipv4.ipv4(addr)
 
 
+def fetch_and_convert_data(packet):
+	printables = string.ascii_letters + ' ' + string.digits + string.punctuation
+	convertables = []
+	for bit in packet:
+		if chr(bit) in printables:
+			convertables.append(chr(bit))
+		else:
+			convertables.append('.')
+	print(''.join(convertables))
+
+
 if __name__ == "__main__":
 	while True:
 		packet, addr = s.recvfrom(65535)
 		# print(packet) # ♥ watch the beauty of network traffic
 		eth = extract_ethernet_frame(packet)
 		extract_ipv4_packet(eth.data, addr)
+		# fetch_and_convert_data(packet) # convert data into printable values
 		print('__________________________________')

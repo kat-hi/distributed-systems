@@ -1,8 +1,7 @@
 import socket
-
-s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.PACKET_FASTROUTE)
 import struct
 
+s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.PACKET_FASTROUTE)
 
 class Ethernet():
 	def __init__(self, packet):

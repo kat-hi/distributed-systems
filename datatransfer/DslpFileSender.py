@@ -1,8 +1,6 @@
 import socket
-import threading
 import sys
 import mimetypes
-import os
 
 USERNAME = sys.argv[1]
 RECEIVER = sys.argv[2]

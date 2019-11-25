@@ -16,10 +16,8 @@ def send_file(sock):
 		size = len(bytes)
 		dslp_file = ['dslp/2.0\r\n', 'user file notify\r\n', USERNAME + '\r\n', RECEIVER + '\r\n',
 		             FILE + '\r\n', mime + '\r\n', str(size) + '\r\n', 'dslp/body\r\n', bytes]
-		line_counter = 0
 		for line in dslp_file:
 			sock.sendall(bytearray(line, "UTF-8"))
-			line_counter += 1
 
 
 def user_join(sock):
@@ -34,7 +32,7 @@ def connect(sock):
 	try:
 		sock.connect(server_adr)
 	except socket.error as e:
-		print("Something went wrong. Connection failed.")
+		print("Something went wrong. Connection failed: ")
 
 
 if __name__ == "__main__":

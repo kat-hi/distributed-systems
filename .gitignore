@@ -1,3 +1,8 @@
 .idea/
 *.zip
 01
+05wireshark
+*.pdf
+__pycache__
+dslp_server/client.py
+dslp_server/timeclient.py

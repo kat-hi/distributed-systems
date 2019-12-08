@@ -33,8 +33,13 @@ def group_leave(user):
 	Group.active_groups.remove(user)
 	print(user.ip + ':' + user.port + 'leaves group ' + user.group)
 
-def group_notify():
-	pass
+
+def group_notify(line, user, receiver):
+	response_msg = ['dslp/2.0\r\n', 'user text notify\r\n', user.name+'\r\n', receiver+'\r\n', 'dslp/body\r\n', line+'\r\n']
+	group = Group.get_group_by_name(user)
+	for member in group.member:
+		for line in response_msg:
+			member.addr.sendLine(bytearray(line, 'utf-8'))
 
 
 def user_join(user):
@@ -45,8 +50,12 @@ def user_leave(user):
 	User.active_users.remove(user)
 
 
-def user_text_notify():
-	pass
+def user_text_notify(line, user, receiver):
+	response_msg = ['dslp/2.0\r\n', 'user text notify\r\n', user.name+'\r\n', receiver+'\r\n', 'dslp/body\r\n', line+'\r\n']
+	group = Group.get_group_by_name(user)
+	for member in group.member:
+		for line in response_msg:
+			member.addr.sendLine(bytearray(line, 'utf-8'))
 
 
 def error(message, addr):

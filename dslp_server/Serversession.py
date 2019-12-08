@@ -11,7 +11,7 @@ class User():
 
 
 class Group():
-	active_groups = [] # list of groups
+	active_groups = [] # list of group-objects
 
 	def __init_(self):
 		self.name = ''

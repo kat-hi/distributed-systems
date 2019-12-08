@@ -15,13 +15,12 @@ class Dslp(LineReceiver):
 		Serverhandler.change_states('NOT_CONNECTED', 'CONNECTED')
 		self.message_type = ''
 		self.user = user # host, port, addr
+		self.receiver = ''
+		self.temp_group_name = ''
+
 
 	def lineReceived(self, line):
 		# these variables are kind of temporary because dslp has to be checked first before any functions are executed
-		temp_group_name = ''
-		temp_user_name = ''
-		temp_text = ''
-		line_number = ''
 
 		line = str(line, 'UTF-8')
 		if STATE['CONNECTED']:
@@ -45,9 +44,9 @@ class Dslp(LineReceiver):
 				else:
 					Serverhandler.error('Didn\'t receive dslp', self)
 			elif self.message_type == 'group join' or 'group leave' or 'group notify':
-				temp_group_name = line
+				self.temp_group_name = line
 			elif self.message_type == 'user join' or 'user leave' or 'user text notify':
-				temp_user_name = line
+				self.user.name = line
 
 			if self.message_type == 'request time':
 				Serverhandler.change_states('EXPECT_LINE_3', 'RESETTING_STATE_MACHINE')
@@ -58,7 +57,7 @@ class Dslp(LineReceiver):
 			print('Line received(' + line + ')')
 			if self.message_type == 'group join':
 				if line == 'dslp/body':  # if the last line from dslp is correct, create the new group:
-					Serverhandler.group_join(self, temp_group_name)
+					Serverhandler.group_join(self.user, self.temp_group_name)
 					Serverhandler.change_states('EXPECT_LINE_4', 'RESETTING_STATE_MACHINE')
 				else:
 					Serverhandler.error('Didn\'t receive dslp', self)
@@ -72,27 +71,32 @@ class Dslp(LineReceiver):
 				expected_lines = line
 				print('Expecting' + expected_lines + 'text line(s) in body.')
 				line_number = int(line)
-				if line_number > 1:
-					Serverhandler.change_states('EXPECT_LINE_4', 'EXPECT_LINE_5')
 			elif self.message_type == 'user join':
-				print('Line received(' + line + ')')
-				Serverhandler.change_states('EXPECT_LINE_4', 'RESETTING_STATE_MACHINE')
+				if line != 'dslp/body':
+					Serverhandler.error('Didn\'t receive dslp', self)
+				else:
+					Serverhandler.user_join(self.user)
 			elif self.message_type == 'user leave':
 				Serverhandler.user_leave(self.user)
+			elif self.message_type == 'user text notify':
+				self.receiver = line
+
+			if self.message_type == 'user text notify' or self.message_type == 'group notify':
+				Serverhandler.change_states('EXPECT_LINE_4', 'EXPECT_LINE_5')
+			elif self.message_type in MESSAGE_TYPES:
 				Serverhandler.change_states('EXPECT_LINE_4', 'RESETTING_STATE_MACHINE')
 
-			elif self.message_type == 'user text notify':
-				Serverhandler.change_states('EXPECT_LINE_4', 'EXPECT_LINE_5')
-
-'''
 		if STATE['EXPECT_LINE_5']:
 			print('Line received(' + line + ')')
+			if self.message_type == 'user text notify':
+				Serverhandler.user_text_notify(line, self.user, self.receiver)
+			elif self.message_type == 'group notify':
+				pass
 			Serverhandler.change_states('EXPECT_LINE_5', 'EXPECT_LINE_6')
 
 		if STATE['EXPECT_FURTHER_DATA']:
 			print('Line received(' + line + ')')
-			Serverhandler.change_states('EXPECT_LINE_5', 'EXPECT_FURTHER_DATA')
-'''
+			Serverhandler.change_states('EXPECT_LINE_6', 'EXPECT_FURTHER_DATA')
 
 
 class DslpFactory(Factory):

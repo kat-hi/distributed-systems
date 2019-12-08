@@ -47,7 +47,7 @@ def group_leave(sock):
 
 
 def connect(sock):
-	server_adr = ("dbl44.beuth-hochschule.de", 21)
+	server_adr = ("dbl44.beuth-hochschule.de", 44444)
 	try:
 		sock.connect(server_adr)
 	except socket.error as e:

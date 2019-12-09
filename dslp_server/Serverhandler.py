@@ -4,6 +4,8 @@ from Serversession import Group, User
 STATE = {'NOT_CONNECTED': False, 'CONNECTED': False, 'EXPECT_MSG_TYPE': False, 'EXPECT_LINE_3': False,
          'EXPECT_LINE_4': False, 'EXPECT_LINE_5': False, 'EXPECT_FURTHER_DATA': False}
 
+STATE_HISTORY = ['NOT_CONNECTED']
+
 
 def response_time(addr):
 	date = str(datetime.datetime.now())
@@ -13,7 +15,8 @@ def response_time(addr):
 
 
 def group_join(user, group_name):
-	if group_name not in Group.active_groups.name:
+	group = Group.get_group_by_name(group_name)
+	if group == False:
 		new_group = Group()
 		new_group.name = group_name
 		new_group.member.append(user)

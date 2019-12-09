@@ -17,9 +17,15 @@ class Group():
 		self.name = ''
 		self.member = []
 
-	def get_group_by_name(self, user):
+	def get_group_by_username(self, user):
 		for group in self.active_groups:
 			if user.group == group.name:
 				return group
+
+	def get_group_by_name(self, groupname):
+		for group in self.active_groups:
+			if group.name == groupname:
+				return group
+		return False
 
 

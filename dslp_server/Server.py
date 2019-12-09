@@ -3,20 +3,18 @@ from twisted.protocols.basic import LineReceiver
 from twisted.internet.protocol import Factory
 from twisted.internet.endpoints import TCP4ServerEndpoint
 from Serversession import Group, User
-from Serverhandler import STATE, STATE_HISTORY
+from Serverhandler import STATE, STATE_HISTORY, MESSAGE_TYPES
 import Serverhandler
 
 '''
-backlog            done:                test:          buggy:
-- group join       - time request                      - user text notify
-- group leave      - user join
-- group notify     - user leave
+this code is beautiful but buggy.
+
+backlog            done:                test:             buggy:
+- group notify     - time request       - group leave     - user text notify
+                   - user join          - group join
+                   - user leave
 				   - error
 '''
-
-MESSAGE_TYPES = ['request time', 'group join', 'group leave', 'group notify', 'user join',
-                 'user leave', 'user text notify', 'user file notify', 'error']
-
 
 class Dslp(LineReceiver):
 	def __init__(self, user):
@@ -50,7 +48,6 @@ class Dslp(LineReceiver):
 			if self.message_type == 'request time':
 				if line == 'dslp/body':
 					Serverhandler.response_time(self)
-					Serverhandler.change_states('EXPECT_LINE_3', 'RESETTING_STATE_MACHINE')
 				else:
 					Serverhandler.error('Didn\'t receive dslp', self)
 					Serverhandler.STATE_HISTORY.append('RESETTING_STATE_MACHINE')
@@ -59,6 +56,7 @@ class Dslp(LineReceiver):
 				self.temp_group_name = line
 			elif self.message_type == 'user join' or 'user leave' or 'user text notify':
 				self.user.name = line
+
 			if self.message_type == 'request time':
 				Serverhandler.change_states('EXPECT_LINE_3', 'RESETTING_STATE_MACHINE')
 				Serverhandler.STATE_HISTORY.append('RESETTING_STATE_MACHINE')
@@ -70,8 +68,7 @@ class Dslp(LineReceiver):
 			print('Line received(' + line + ')')
 			if self.message_type == 'group join':
 				if line == 'dslp/body':  # if the last line from dslp is correct, create the new group:
-					pass
-					#Serverhandler.group_join(self.user, self.temp_group_name)
+					Serverhandler.group_join(self.user, self.temp_group_name)
 				else:
 					Serverhandler.error('Didn\'t receive dslp', self)
 			elif self.message_type == 'group leave':
@@ -98,26 +95,30 @@ class Dslp(LineReceiver):
 
 			if self.message_type == 'user text notify' or self.message_type == 'group notify':
 				Serverhandler.change_states('EXPECT_LINE_4', 'EXPECT_LINE_5')
+				Serverhandler.STATE_HISTORY.append('EXPECT_LINE_4')
 			elif self.message_type in MESSAGE_TYPES:
 				Serverhandler.change_states('EXPECT_LINE_4', 'RESETTING_STATE_MACHINE')
 
 		elif STATE['EXPECT_LINE_5'] and STATE_HISTORY[3] == 'EXPECT_LINE_4':
 			print('Line received(' + line + ')')
 			if self.message_type == 'user text notify':
-				Serverhandler.user_text_notify(line, self.user, self.receiver)
-				pass
+				# this part would catch the number of lines but since this is not supported it is not implemented
+				print('Expecting' + line + 'text line(s) in body.')
 			elif self.message_type == 'group notify':
-				# Serverhandler.group_notify()
-				pass
+				if line != 'dslp/2.0':
+					Serverhandler.error('Didn\'t receive dslp', self)
+					Serverhandler.STATE_HISTORY.append('RESETTING_STATE_MACHINE')
+
 			Serverhandler.change_states('EXPECT_LINE_5', 'EXPECT_LINE_6')
+			Serverhandler.STATE_HISTORY.append('EXPECT_LINE_5')
+
+		elif STATE['EXPECT_LINE_6'] and STATE_HISTORY[4] == 'EXPECT_LINE_5':
+			if self.message_type == 'user text notify':
+				Serverhandler.user_text_notify(line, self.user, self.receiver)
 
 		elif STATE['EXPECT_FURTHER_DATA'] and STATE_HISTORY[4] == 'EXPECT_LINE_5':
 			print('Line received(' + line + ')')
 			Serverhandler.change_states('EXPECT_LINE_6', 'EXPECT_FURTHER_DATA')
-
-		elif STATE['EXPECT_FURTHER_DATA'] and STATE_HISTORY[5] == 'EXPECT_FURTHER_DATA':
-			print('Line received(' + line + ')')
-
 
 
 class DslpFactory(Factory):

@@ -2,6 +2,7 @@ import datetime
 from Serversession import Group, User
 import Serversession
 
+# state and state_history should have been object-attributes? too late now.
 STATE = {'NOT_CONNECTED': False, 'CONNECTED': False, 'EXPECT_MSG_TYPE': False, 'EXPECT_LINE_3': False,
          'EXPECT_LINE_4': False, 'EXPECT_LINE_5': False, 'EXPECT_FURTHER_DATA': False}
 
@@ -79,6 +80,7 @@ def change_states(current_state, new_state):
 	if new_state == 'RESETTING_STATE_MACHINE':
 		STATE[current_state] = False
 		print(new_state)
+		STATE_HISTORY = ['NOT_CONNECTED']
 	else:
 		STATE[current_state] = False
 		STATE[new_state] = True

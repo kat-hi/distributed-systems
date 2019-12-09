@@ -9,7 +9,7 @@ import Serverhandler
 '''
 I wrote 250 lines of code without testing. turns out, it's buggy.
 
-backlog            done:                test:                  buggy:
+backlog            done:                test:               buggy:
 				   - time request       - group leave     
                    - user join          - group join
                    - user leave         - group notify 

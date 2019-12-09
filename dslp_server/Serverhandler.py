@@ -39,10 +39,11 @@ def group_leave(user):
 	print(user.ip + ':' + user.port + 'leaves group ' + user.group)
 
 
-def group_notify(line, user, receiver):
-	response_msg = ['dslp/2.0\r\n', 'user text notify\r\n', user.name+'\r\n', receiver+'\r\n', 'dslp/body\r\n', line+'\r\n']
+def group_notify(line, user):
 	group = Serversession.get_group_by_name(user)
 	for member in group.member:
+		response_msg = ['dslp/2.0\r\n', 'user text notify\r\n', user.name + '\r\n', member.name + '\r\n', 'dslp/body\r\n',
+		                line + '\r\n']
 		for line in response_msg:
 			member.addr.sendLine(bytearray(line, 'utf-8'))
 
@@ -59,7 +60,9 @@ def user_leave(user):
 
 def user_text_notify(line, user, receiver):
 	response_msg = ['dslp/2.0\r\n', 'user text notify\r\n', user.name+'\r\n', receiver+'\r\n', 'dslp/body\r\n', line+'\r\n']
-
+	Serversession.get_addr_by_username(receiver)
+	for line in response_msg:
+		receiver.sendLine(bytearray(line, 'utf8'))
 
 
 # @ TODO: message lines are still static.

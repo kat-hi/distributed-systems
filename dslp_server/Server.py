@@ -5,16 +5,15 @@ from twisted.internet.endpoints import TCP4ServerEndpoint
 from Serversession import Group, User
 from Serverhandler import STATE, STATE_HISTORY
 import Serverhandler
-'''
-backlog          done:               buggy:
-- group join     - time request
-- group leave    - user join
-- group notify   - error
-
-		        
-				
 
 '''
+backlog            done:                test:          buggy:
+- group join       - time request                      - user text notify
+- group leave      - user join
+- group notify     - user leave
+				   - error
+'''
+
 MESSAGE_TYPES = ['request time', 'group join', 'group leave', 'group notify', 'user join',
                  'user leave', 'user text notify', 'user file notify', 'error']
 
@@ -90,8 +89,10 @@ class Dslp(LineReceiver):
 				else:
 					Serverhandler.user_join(self.user)
 			elif self.message_type == 'user leave':
-				pass
-				# Serverhandler.user_leave(self.user)
+				if line != 'dslp/body':
+					Serverhandler.error('Didn\'t receive dslp', self)
+				else:
+					Serverhandler.user_leave(self.user)
 			elif self.message_type == 'user text notify':
 				self.receiver = line
 

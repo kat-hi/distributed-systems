@@ -30,10 +30,10 @@ def group_join(user, group_name):
 
 
 def group_leave(user):
-	User.active_users.remove(user)
 	group = Group.get_group_by_name(user)
 	group.member.remove(user)
 	Group.active_groups.remove(user)
+	User.active_users.remove(user)
 	print(user.ip + ':' + user.port + 'leaves group ' + user.group)
 
 
@@ -47,10 +47,12 @@ def group_notify(line, user, receiver):
 
 def user_join(user):
 	User.active_users.append(user)
+	print(user + ' joins server')
 
 
 def user_leave(user):
 	User.active_users.remove(user)
+	print(user + ' leaves server')
 
 
 def user_text_notify(line, user, receiver):
@@ -61,6 +63,7 @@ def user_text_notify(line, user, receiver):
 			member.addr.sendLine(bytearray(line, 'utf-8'))
 
 
+# @ TODO: message lines are still static.
 def error(message, addr):
 	countlines = 0
 	for line in message:

@@ -36,9 +36,9 @@ def get_ip_from_www_server(zone):
 		print('IPv4: ---')
 
 	try:
-		www_server_ipv6 = dns.resolver.query(zone, "AAAA")
+		www_server_ipv6 = dns.resolver.query(url, "AAAA")
 		for server in www_server_ipv6:
-			print('IPv4: ' + str(server))
+			print('IPv6: ' + str(server))
 	except dns.resolver.NoAnswer:
 		print('IPv6: ---')
 	except Exception:

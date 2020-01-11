@@ -26,10 +26,12 @@ def connect():
 		print("Something went wrong. Connection failed")
 
 
-def receive():
+def send_request():
 	request = "GET /%s HTTP/1.1\r\nHost: %s\r\nAccept:  */*\r\n\r\n" % (RESSOURCE, DNS)
 	sock.send(request.encode())
 
+
+def receive():
 	content = b''
 	while True:
 		response = sock.recv(64000)
@@ -60,6 +62,7 @@ def save_file(etag, content_length, content):
 if __name__ == '__main__':
 	# it_could_have_been_so_simple()
 	connect()
+	send_request()
 	content = receive()
 	content_length = content_length_extractor(content)
 	etag = etag_extractor(content)

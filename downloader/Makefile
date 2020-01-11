@@ -1,5 +1,5 @@
 compile:
-	@echo "time time time.... time flies when you're having fun."
+	@echo "..."
 
 run:
 	@python3 downloader.py $(uri)

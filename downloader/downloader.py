@@ -22,7 +22,7 @@ def connect():
 	try:
 		sock.connect(server_adr)
 		print('Connection established')
-	except socket.error as e:
+	except socket.error:
 		print("Something went wrong. Connection failed")
 
 
@@ -47,10 +47,11 @@ def content_length_extractor(content):
 	return content_length
 
 
+# etag is used to define the filename in save_file()
 def etag_extractor(content):
 	regex_etag = 'ETag: \"((\w)*(-)*)*\"'
 	etag = re.search(regex_etag, str(content)).group().split("\"")
-	etag = etag[1] + "."
+	etag = etag[1] + "." # preparation for save_file() when etag and filetype will be concatenated to a new filename
 	return etag
 
 

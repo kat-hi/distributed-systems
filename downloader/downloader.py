@@ -68,7 +68,6 @@ def save_file(etag, content_length, content):
 
 if __name__ == '__main__':
 	# it_could_have_been_so_simple()
-	check_tls()
 	if check_tls():
 		connect()
 		send_request()

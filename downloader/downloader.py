@@ -5,6 +5,7 @@ import re
 
 URI = sys.argv[1]
 PORT = 80
+PROTOCOL = URI.split('://')[0]
 DNS = (URI.split('//')[1]).split('/', 1)[0]
 RESSOURCE = (URI.split('//')[1]).split('/', 1)[1]
 FILETYPE = (URI.split('//')[1]).split('.', 2)[2]
@@ -17,6 +18,11 @@ def it_could_have_been_so_simple():
 	r = requests.get(URI, allow_redirects=True)
 	open('media.' + FILETYPE, 'wb').write(r.content)
 
+def check_tls():
+	if PROTOCOL == 'https':
+		print('It won\'t work. TLS or SSL is used')
+		return False
+	return True
 
 def connect():
 	try:
@@ -62,9 +68,11 @@ def save_file(etag, content_length, content):
 
 if __name__ == '__main__':
 	# it_could_have_been_so_simple()
-	connect()
-	send_request()
-	content = receive()
-	content_length = content_length_extractor(content)
-	etag = etag_extractor(content)
-	save_file(etag, content_length, content)
+	check_tls()
+	if check_tls():
+		connect()
+		send_request()
+		content = receive()
+		content_length = content_length_extractor(content)
+		etag = etag_extractor(content)
+		save_file(etag, content_length, content)

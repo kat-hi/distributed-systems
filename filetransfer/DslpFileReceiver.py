@@ -33,21 +33,12 @@ def receive(sock):
 			with open(FILE, 'w', encoding="utf-8") as file:
 				file.write(DATA)
 			file.close()
-		# jpeg and png are recognized as image-files (this assumption is based on the correct icons I saw in the filesystem)
-		# but with opening these images I got the error message "Fatal error reading PNG image file: Not a PNG file"
-		# maybe I did not fetch all bytes that are necessary for these images? file sizes differ in any case.
-		# what is wrong?
 		elif MIMETYPE == "image/jpeg" or MIMETYPE == "image/png":
 			with open(FILE, 'wb') as file:
 				DATA = bytes(DATA, 'UTF-8')
 				for data in DATA:
 					file.write(bytes(data))
 			file.close()
-		# same with pdf. The icon is perfect, but with opening I get "File type STL 3D model (binary) (model/x.stl-binary) is not supported"
-		# still needs to be investigated if there is some time left the next days.
-		# actually I do not understand why I have to use bytes()-method twice. If I don't, it seems to be worse,
-		# because I even did not get a nice icon in my directory.
-		# any hints Peter? in case you read this.. otherwise I will ask you anyway :)
 		elif MIMETYPE == "application/pdf":
 			with open(FILE, 'wb') as file:
 				DATA = bytes(DATA, 'UTF-8')
